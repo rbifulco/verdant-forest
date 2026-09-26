@@ -96,8 +96,8 @@ export function registerTrees(registry: SceneAssetRegistry, meshes: THREE.Instan
       const root = new THREE.Group(), matrix = new THREE.Matrix4();
       wood.getMatrixAt(i, matrix); matrix.decompose(root.position, root.quaternion, root.scale);
       if (Math.max(Math.abs(root.position.x), Math.abs(root.position.z)) > maxCoordinate) continue;
-      const trunk = new THREE.Mesh(wood.geometry, wood.material); trunk.name = 'Trunk and branches';
-      const canopy = new THREE.Mesh(leaves.geometry, leaves.material); canopy.name = 'Canopy leaves';
+      const trunk = new THREE.Mesh(wood.userData.lods?.[2] ?? wood.geometry, wood.material); trunk.name = 'Trunk and branches';
+      const canopy = new THREE.Mesh(leaves.userData.lods?.[2] ?? leaves.geometry, leaves.material); canopy.name = 'Canopy leaves';
       root.add(trunk, canopy);
       const variant = wood.userData.reviewVariant as number;
       registerReviewRoot(registry, root, {

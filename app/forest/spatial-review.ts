@@ -85,7 +85,11 @@ export async function startForestReview(signal: AbortSignal, status: (text: stri
     // saved ground-level viewpoint; ordinary exploration retains the full grid.
     const inReviewGrove = (key: string) => {
       const match = /^(?:grass|fern|shrub|herb)-(-?\d+)-(-?\d+)(?:-\d+)?$/.exec(key);
-      return !!match && Math.abs(Number(match[1]) * 20 + 10) <= 40 && Math.abs(Number(match[2]) * 20 + 10) <= 40;
+      if (!match) return false;
+      const x = Number(match[1]) * 20 + 10, z = Number(match[2]) * 20 + 10;
+      return (Math.abs(x) <= 20 && Math.abs(z) <= 20)
+        || (x === -30 && Math.abs(z) <= 20)
+        || (z === -30 && Math.abs(x) <= 20);
     };
     const grassCells = new Map<string, THREE.Mesh[]>();
     for (const object of scene.children) {
@@ -122,12 +126,15 @@ export async function startForestReview(signal: AbortSignal, status: (text: stri
       const id = `${kind}-patch-${object.userData.reviewKey ?? placementKey(matrix)}`;
       add(object, id, `${kind[0].toUpperCase() + kind.slice(1)} patch ${placementKey(matrix)}`, 'app/forest/vegetation.ts#createVegetation', 'Understory');
     }
-    for (let i = 0; i < details.length; i += 4) {
+    const mossDetails = details.filter(object => object.userData.kind === 'moss-detail') as THREE.InstancedMesh[];
+    mossDetails.sort((a, b) => a.boundingSphere!.center.lengthSq() - b.boundingSphere!.center.lengthSq());
+    const reviewDetails = [...mossDetails.slice(0, 12), ...details.filter(object => object.type === 'Group' && !object.name).slice(0, 12)];
+    for (let i = 0; i < reviewDetails.length; i += 2) {
       const root = new THREE.Group();
-      root.name = `Woodland details ${i + 1}–${Math.min(i + 4, details.length)}`;
+      root.name = `Woodland details ${i + 1}–${Math.min(i + 2, reviewDetails.length)}`;
       scene.add(root);
-      for (const object of details.slice(i, i + 4)) root.add(object);
-      add(root, `detail-group-${i / 4}`, root.name, 'app/forest/details.ts#createForestDetails');
+      for (const object of reviewDetails.slice(i, i + 2)) root.add(object);
+      add(root, `detail-group-${i / 2}`, root.name, 'app/forest/details.ts#createForestDetails');
     }
     signal.throwIfAborted();
     registry.registerNavigationSequence({

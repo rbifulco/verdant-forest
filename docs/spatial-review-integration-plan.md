@@ -31,13 +31,13 @@ the runtime bridge still checks the exact editor origin.
 
 | Subject | Boundary and identity | Authoritative source |
 | --- | --- | --- |
-| Trees | One actor per deterministic placement index within 240 m of the forest center; eight shared canonical variants; named trunk/branches and canopy components | `app/forest/vegetation.ts#createVegetation`, `app/forest/trees.js#createTreeGeometry` |
+| Trees | One actor per deterministic placement index within 240 m of the forest center; eight shared low-detail variants; named trunk/branches and canopy components | `app/forest/vegetation.ts#createVegetation`, `app/forest/trees.js#createTreeGeometry` |
 | Rocks | One actor per variant/placement index; five shared canonical variants | `app/forest/surfaces.ts#createRocks`, `rockGeometry` |
 | Terrain/trail | 16 exact grid tiles; no surface resampling; each below the transfer budget | `app/forest/surfaces.ts#createGround`, `app/forest/math.ts#heightAt` |
 | Fallen logs | One actor per `DEADWOOD_PLACEMENTS` entry | `app/forest/surfaces.ts#DEADWOOD_PLACEMENTS`, `createDeadwood` |
-| Grass, ferns, shrubs, herbs | Four grass quadrants grouped into one actor per cell; fern, shrub and herb actors per grid patch in the central 80 m grove containing the saved viewpoints; original highest-detail shapes | `app/forest/vegetation.ts#createVegetation` and botanical factories |
+| Grass, ferns, shrubs, herbs | Four grass quadrants grouped into one actor per cell; fern, shrub and herb actors sampled in eight central cells around the saved viewpoints | `app/forest/vegetation.ts#createVegetation` and botanical factories |
 | Litter and mushrooms | Instanced context families; individual instances are asset detail, not independent scene actors | `app/forest/surfaces.ts#createLitter`, `createMushrooms` |
-| Roots, ivy, fungi, moss, twigs, acorns | Construction-order detail families grouped four at a time for review; all original geometry is retained | `app/forest/details.ts#createForestDetails`, `app/forest/trunk-life.ts#createTrunkLife` |
+| Moss and trunk life | Twelve moss patches nearest the entrance and the first twelve authored trunk-life groups, paired into review actors; the full detail field remains on the ordinary website | `app/forest/details.ts#createForestDetails`, `app/forest/trunk-life.ts#createTrunkLife` |
 | Inspection viewpoints | Ten existing saved camera/aim positions; no fabricated connecting journey | `app/forest/controls.ts#viewpoints` |
 
 The forest is world-owned; it has no authored room/place assembly hierarchy.
@@ -110,11 +110,11 @@ stable construction metadata on the existing vegetation meshes.
   full catalog, unique actor IDs, ten saved viewpoints, rejected unauthorized
   origin, representative tree/rock/grass/terrain streamed geometry and teardown.
   This is not a browser render or a real texture transfer test.
-- Final full capture check: 2,916 actors, 222 families,
-  about 1.64 MB metadata, 736 MiB estimated aggregate asset geometry,
-  and about 7.5 seconds startup in the local Node check.
-  The official editor's 5,000 actor and 2,000 asset limits and a 1 GiB
-  aggregate transfer budget are enforced by this check in CI.
+- Final full capture check: 2,776 actors, 82 families,
+  about 1.51 MB metadata, 215 MiB estimated aggregate asset geometry,
+  and about 6.7 seconds startup in the local Node check.
+  The official editor's 5,000 actor and 2,000 asset limits and a conservative
+  256 MiB aggregate geometry estimate are enforced by this check in CI.
   These are CPU measurements, not browser FPS or hosted performance claims.
 - Local HTTP: discovery and capture return 200; capture framing is restricted to
   the website and official editor. Official-editor CORS returned the exact allowed origin. Local bark texture

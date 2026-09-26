@@ -12,7 +12,7 @@ const {reviewDiscovery, REVIEW_EDITOR} = await vite.ssrLoadModule('/app/forest/r
 
 test('discovery resolves to the dedicated capture route with exact editor access', () => {
   const discovery = normalizeSpatialReviewDiscovery(reviewDiscovery, 'https://forest.example/.well-known/spatial-review.json');
-  assert.equal(discovery.liveCapture, 'https://forest.example/spatial-review/?v=4');
+  assert.equal(discovery.liveCapture, 'https://forest.example/spatial-review/?v=5');
   assert.deepEqual(discovery.capabilities.liveCapture.editorOriginPolicy.origins, [REVIEW_EDITOR]);
 });
 
