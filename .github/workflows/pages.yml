@@ -28,6 +28,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: node --test tests/spatial-review.test.mjs
+      - run: node scripts/check-spatial-review.mjs
       - run: npm run build:pages
         env:
           PAGES_BASE: /verdant-forest/

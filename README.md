@@ -24,7 +24,8 @@ The editor discovers `/.well-known/spatial-review.json` and opens the dedicated
 `/spatial-review` capture page. Keep that page open while reviewing. Ordinary
 forest visits do not load the review SDK.
 
-The capture provides independent trees and rocks, terrain tiles, woodland context
+The capture provides individual trees across the playable forest and its camera
+horizon, independent rocks, terrain tiles, woodland context
 and the existing inspection viewpoints. Shapes and placements come from the
 forest's construction code; custom shader appearance and atmospheric lighting are
 approximations. A consumer supporting `asset-stream-v1` is required.

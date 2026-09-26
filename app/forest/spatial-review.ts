@@ -77,9 +77,30 @@ export async function startForestReview(signal: AbortSignal, status: (text: stri
     add(mushrooms, 'mushrooms', 'Mushroom patches', 'app/forest/surfaces.ts#createMushrooms');
     logs.forEach((log, i) => add(log, `deadwood-${i}`, `Fallen log ${i + 1}`, 'app/forest/surfaces.ts#DEADWOOD_PLACEMENTS', 'Deadwood'));
     const trees = scene.children.filter(o => o.userData.kind === 'tree') as THREE.InstancedMesh[];
-    registerTrees(registry, trees, revision);
+    // Keep individual trees across the playable forest and its camera horizon.
+    // The remote editor caps a catalog at 5,000 actors.
+    registerTrees(registry, trees, revision, 240);
+    const grassCells = new Map<string, THREE.Mesh[]>();
     for (const object of scene.children) {
-      if (!(object instanceof THREE.Mesh) || !['grass', 'fern', 'shrub', 'herb'].includes(object.userData.kind) || object.userData.lodLevel > 0) continue;
+      if (!(object instanceof THREE.Mesh) || object.userData.kind !== 'grass' || object.userData.lodLevel > 0) continue;
+      const key = String(object.userData.reviewKey).replace(/-\d+$/, '');
+      const patches = grassCells.get(key) ?? [];
+      patches.push(object);
+      grassCells.set(key, patches);
+    }
+    for (const [key, patches] of grassCells) {
+      const root = new THREE.Group();
+      root.name = `Grass cell ${key}`;
+      scene.add(root);
+      for (const patch of patches) root.add(patch);
+      add(root, `grass-patch-${key}`, root.name, 'app/forest/vegetation.ts#createVegetation', 'Understory', () => {
+        const expanded = new THREE.Group();
+        for (const patch of patches) expanded.add(expandGrass(patch));
+        return expanded;
+      });
+    }
+    for (const object of scene.children) {
+      if (!(object instanceof THREE.Mesh) || !['fern', 'shrub', 'herb'].includes(object.userData.kind) || object.userData.lodLevel > 0) continue;
       const kind = object.userData.kind as string;
       const matrix = new THREE.Matrix4();
       if (object instanceof THREE.InstancedMesh) {
@@ -91,7 +112,7 @@ export async function startForestReview(signal: AbortSignal, status: (text: stri
         matrix.makeTranslation(placements.getX(0), placements.getY(0), placements.getZ(0));
       }
       const id = `${kind}-patch-${object.userData.reviewKey ?? placementKey(matrix)}`;
-      add(object, id, `${kind[0].toUpperCase() + kind.slice(1)} patch ${placementKey(matrix)}`, 'app/forest/vegetation.ts#createVegetation', 'Understory', object.userData.compact ? () => expandGrass(object) : undefined);
+      add(object, id, `${kind[0].toUpperCase() + kind.slice(1)} patch ${placementKey(matrix)}`, 'app/forest/vegetation.ts#createVegetation', 'Understory');
     }
     details.forEach((object, i) => add(object, `detail-${i}`, object.name || `${object.userData.kind || object.children[0]?.userData.kind || 'Woodland detail'} ${i + 1}`, 'app/forest/details.ts#createForestDetails'));
     signal.throwIfAborted();

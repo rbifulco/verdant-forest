@@ -88,13 +88,14 @@ export function registerReviewRoot(registry: SceneAssetRegistry, root: THREE.Obj
 
 /** Tree wood/leaf batches have matching matrices. Restore each tree boundary
  * while keeping the eight canonical designs shared across placements. */
-export function registerTrees(registry: SceneAssetRegistry, meshes: THREE.InstancedMesh[], revision: string) {
+export function registerTrees(registry: SceneAssetRegistry, meshes: THREE.InstancedMesh[], revision: string, maxCoordinate = Infinity) {
   for (let batch = 0; batch < meshes.length; batch += 2) {
     const wood = meshes[batch], leaves = meshes[batch + 1];
     if (!leaves || wood.count !== leaves.count) throw new Error('Tree component batches do not match');
     for (let i = 0; i < wood.count; i++) {
       const root = new THREE.Group(), matrix = new THREE.Matrix4();
       wood.getMatrixAt(i, matrix); matrix.decompose(root.position, root.quaternion, root.scale);
+      if (Math.max(Math.abs(root.position.x), Math.abs(root.position.z)) > maxCoordinate) continue;
       const trunk = new THREE.Mesh(wood.geometry, wood.material); trunk.name = 'Trunk and branches';
       const canopy = new THREE.Mesh(leaves.geometry, leaves.material); canopy.name = 'Canopy leaves';
       root.add(trunk, canopy);
