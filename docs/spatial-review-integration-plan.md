@@ -120,7 +120,8 @@ stable construction metadata on the existing vegetation meshes.
 - The GitHub Pages workflow builds the client-only site at
   `https://rbifulco.github.io/verdant-forest/`. Its ordinary forest rendered in
   a live browser, the hosted capture reported ready, and discovery returned 200
-  with CORS. The prior Sites deployment is independent.
+  with CORS. The discovery points to a versioned capture URL so the editor does
+  not reuse a cached build. The prior Sites deployment is independent.
 - Live image byte transfer, visual comparison in the editor, and a human feedback
   export/application round trip remain unverified.
 

@@ -3,7 +3,7 @@
   "version": 1,
   "name": "Verdant Forest",
   "websiteUrl": "../",
-  "liveCapture": "../spatial-review",
+  "liveCapture": "../spatial-review/?v=2",
   "capabilities": {
     "liveCapture": {
       "editorOriginPolicy": {
