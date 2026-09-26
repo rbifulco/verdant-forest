@@ -23,7 +23,9 @@ This integration does not register page UI, cookies, storage or other app state.
 Static discovery keeps all SDK, registry and capture work out of ordinary visits.
 The public document also supplies the runtime origin policy. Cloudflare `_headers`
 and a development middleware permit its exact-origin CORS fetch. The capture
-page uses a `frame-ancestors` response header. No deployment was requested.
+page uses a `frame-ancestors` response header on the Sites host. GitHub Pages
+publishes a separate static build; its discovery response has public CORS while
+the runtime bridge still checks the exact editor origin.
 
 ## Representation and source mapping
 
@@ -114,9 +116,12 @@ stable construction metadata on the existing vegetation meshes.
 - Local HTTP: discovery and capture return 200; capture framing is restricted to
   the website and official editor. Official-editor CORS returned the exact allowed origin. Local bark texture
   returned `image/jpeg`; production copies remain unverified.
-- Source texture URLs are local public paths; production texture MIME, live image
-  byte transfer, visual comparison in the editor, and feedback export/application
-  round trip remain unverified. Browser testing and deployment were not requested.
+- The GitHub Pages workflow builds the client-only site at
+  `https://rbifulco.github.io/verdant-forest/`. Its ordinary forest rendered in
+  a live browser, the hosted capture reported ready, and discovery returned 200
+  with CORS. The prior Sites deployment is independent.
+- Live image byte transfer, visual comparison in the editor, and a human feedback
+  export/application round trip remain unverified.
 
 ## Review loop
 

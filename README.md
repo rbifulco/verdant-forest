@@ -18,7 +18,8 @@ The scripts under `scripts` export reproducible geometry/shader inputs, validate
 
 ## Alterno Spatial Review
 
-Connect this website's URL in [Alterno Spatial Review](https://spatial-review.alterno.dev).
+The integrated build is published on [GitHub Pages](https://rbifulco.github.io/verdant-forest/).
+[Open it in Alterno Spatial Review](https://spatial-review.alterno.dev/review?site=https%3A%2F%2Frbifulco.github.io%2Fverdant-forest%2F).
 The editor discovers `/.well-known/spatial-review.json` and opens the dedicated
 `/spatial-review` capture page. Keep that page open while reviewing. Ordinary
 forest visits do not load the review SDK.
