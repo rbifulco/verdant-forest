@@ -43,6 +43,7 @@ try {
   assert.equal(catalog.scene.navigationSequences[0].segments.length, 0);
   assert.equal(new Set(actors.map(a=>a.actorId)).size,actors.length);
   assert.ok(actors.length <= 5000, `Official editor accepts at most 5,000 actors; found ${actors.length}`);
+  assert.ok(catalog.assetCatalog.assets.length <= 2000, `Official editor accepts at most 2,000 assets; found ${catalog.assetCatalog.assets.length}`);
   assert.ok(actors.filter(a=>a.category==='Trees').length>1000);
   const categories = Object.fromEntries([...new Set(actors.map(actor => actor.category))].map(category => [category, actors.filter(actor => actor.category === category).length]));
   console.log(JSON.stringify({actors:actors.length,categories,assets:catalog.assetCatalog.assets.length,catalogBytes:JSON.stringify(catalog).length,startupMs:Math.round(performance.now()-start),heapMiB:Math.round(process.memoryUsage().heapUsed/1024/1024)}));

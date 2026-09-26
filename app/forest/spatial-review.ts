@@ -114,7 +114,13 @@ export async function startForestReview(signal: AbortSignal, status: (text: stri
       const id = `${kind}-patch-${object.userData.reviewKey ?? placementKey(matrix)}`;
       add(object, id, `${kind[0].toUpperCase() + kind.slice(1)} patch ${placementKey(matrix)}`, 'app/forest/vegetation.ts#createVegetation', 'Understory');
     }
-    details.forEach((object, i) => add(object, `detail-${i}`, object.name || `${object.userData.kind || object.children[0]?.userData.kind || 'Woodland detail'} ${i + 1}`, 'app/forest/details.ts#createForestDetails'));
+    for (let i = 0; i < details.length; i += 4) {
+      const root = new THREE.Group();
+      root.name = `Woodland details ${i + 1}–${Math.min(i + 4, details.length)}`;
+      scene.add(root);
+      for (const object of details.slice(i, i + 4)) root.add(object);
+      add(root, `detail-group-${i / 4}`, root.name, 'app/forest/details.ts#createForestDetails');
+    }
     signal.throwIfAborted();
     registry.registerNavigationSequence({
       id: 'forest-viewpoints', name: 'Forest inspection viewpoints',

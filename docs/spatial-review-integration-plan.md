@@ -37,7 +37,7 @@ the runtime bridge still checks the exact editor origin.
 | Fallen logs | One actor per `DEADWOOD_PLACEMENTS` entry | `app/forest/surfaces.ts#DEADWOOD_PLACEMENTS`, `createDeadwood` |
 | Grass, ferns, shrubs, herbs | Four grass quadrants grouped into one actor per cell; fern, shrub and herb actors per grid patch; original highest-detail shapes | `app/forest/vegetation.ts#createVegetation` and botanical factories |
 | Litter and mushrooms | Instanced context families; individual instances are asset detail, not independent scene actors | `app/forest/surfaces.ts#createLitter`, `createMushrooms` |
-| Roots, ivy, fungi, moss, twigs, acorns | Construction-order detail families with source names; context batches retain their rendered grouping | `app/forest/details.ts#createForestDetails`, `app/forest/trunk-life.ts#createTrunkLife` |
+| Roots, ivy, fungi, moss, twigs, acorns | Construction-order detail families grouped four at a time for review; all original geometry is retained | `app/forest/details.ts#createForestDetails`, `app/forest/trunk-life.ts#createTrunkLife` |
 | Inspection viewpoints | Ten existing saved camera/aim positions; no fabricated connecting journey | `app/forest/controls.ts#viewpoints` |
 
 The forest is world-owned; it has no authored room/place assembly hierarchy.
@@ -110,9 +110,9 @@ stable construction metadata on the existing vegetation meshes.
   full catalog, unique actor IDs, ten saved viewpoints, rejected unauthorized
   origin, representative tree/rock/grass/terrain streamed geometry and teardown.
   This is not a browser render or a real texture transfer test.
-- Final full capture check: 4,810 actors, 2,116 families,
-  about 3.43 MB metadata, about 7.6 seconds startup in the local Node check.
-  The official editor's 5,000 actor limit is enforced by this check in CI.
+- Final full capture check: 4,452 actors, 1,758 families,
+  about 3.09 MB metadata, about 7.2 seconds startup in the local Node check.
+  The official editor's 5,000 actor and 2,000 asset limits are enforced by this check in CI.
   These are CPU measurements, not browser FPS or hosted performance claims.
 - Local HTTP: discovery and capture return 200; capture framing is restricted to
   the website and official editor. Official-editor CORS returned the exact allowed origin. Local bark texture
