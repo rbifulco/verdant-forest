@@ -44,9 +44,11 @@ try {
   assert.equal(new Set(actors.map(a=>a.actorId)).size,actors.length);
   assert.ok(actors.length <= 5000, `Official editor accepts at most 5,000 actors; found ${actors.length}`);
   assert.ok(catalog.assetCatalog.assets.length <= 2000, `Official editor accepts at most 2,000 assets; found ${catalog.assetCatalog.assets.length}`);
+  const estimatedAssetBytes = catalog.assetCatalog.assets.reduce((sum, asset) => sum + asset.stream.representations[0].estimatedBytes, 0);
+  assert.ok(estimatedAssetBytes <= 1024 * 1024 * 1024, `Review assets exceed the 1 GiB aggregate transfer budget`);
   assert.ok(actors.filter(a=>a.category==='Trees').length>1000);
   const categories = Object.fromEntries([...new Set(actors.map(actor => actor.category))].map(category => [category, actors.filter(actor => actor.category === category).length]));
-  console.log(JSON.stringify({actors:actors.length,categories,assets:catalog.assetCatalog.assets.length,catalogBytes:JSON.stringify(catalog).length,startupMs:Math.round(performance.now()-start),heapMiB:Math.round(process.memoryUsage().heapUsed/1024/1024)}));
+  console.log(JSON.stringify({actors:actors.length,categories,assets:catalog.assetCatalog.assets.length,estimatedAssetMiB:Math.round(estimatedAssetBytes/1024/1024),catalogBytes:JSON.stringify(catalog).length,startupMs:Math.round(performance.now()-start),heapMiB:Math.round(process.memoryUsage().heapUsed/1024/1024)}));
   for (const assetId of ['tree-variant-0','rock-variant-0',actors.find(a=>a.actorId.startsWith('grass-patch-')).assetId,'terrain-0']) {
     const id=`asset-${assetId}`;
     send({type:SPATIAL_REVIEW_ASSET_REQUEST,requestId:id,assetId,buildId:catalog.buildId,profile:'review',stream:{capability:'asset-stream-v1',representationId:'detail',priority:'interactive',maxBytes:64*1024*1024}});

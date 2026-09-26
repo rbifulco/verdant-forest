@@ -80,9 +80,17 @@ export async function startForestReview(signal: AbortSignal, status: (text: stri
     // Keep individual trees across the playable forest and its camera horizon.
     // The remote editor caps a catalog at 5,000 actors.
     registerTrees(registry, trees, revision, 240);
+    // Understory is dense instancing: the complete 400-cell grid represents
+    // several GiB of transferable geometry. Review the grove containing every
+    // saved ground-level viewpoint; ordinary exploration retains the full grid.
+    const inReviewGrove = (key: string) => {
+      const match = /^(?:grass|fern|shrub|herb)-(-?\d+)-(-?\d+)(?:-\d+)?$/.exec(key);
+      return !!match && Math.abs(Number(match[1]) * 20 + 10) <= 40 && Math.abs(Number(match[2]) * 20 + 10) <= 40;
+    };
     const grassCells = new Map<string, THREE.Mesh[]>();
     for (const object of scene.children) {
       if (!(object instanceof THREE.Mesh) || object.userData.kind !== 'grass' || object.userData.lodLevel > 0) continue;
+      if (!inReviewGrove(String(object.userData.reviewKey))) continue;
       const key = String(object.userData.reviewKey).replace(/-\d+$/, '');
       const patches = grassCells.get(key) ?? [];
       patches.push(object);
@@ -100,7 +108,7 @@ export async function startForestReview(signal: AbortSignal, status: (text: stri
       });
     }
     for (const object of scene.children) {
-      if (!(object instanceof THREE.Mesh) || !['fern', 'shrub', 'herb'].includes(object.userData.kind) || object.userData.lodLevel > 0) continue;
+      if (!(object instanceof THREE.Mesh) || !['fern', 'shrub', 'herb'].includes(object.userData.kind) || object.userData.lodLevel > 0 || !inReviewGrove(String(object.userData.reviewKey))) continue;
       const kind = object.userData.kind as string;
       const matrix = new THREE.Matrix4();
       if (object instanceof THREE.InstancedMesh) {
