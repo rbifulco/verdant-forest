@@ -32,9 +32,14 @@ jobs:
         env:
           PAGES_BASE: /verdant-forest/
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v4
+      - name: Package Pages files, including discovery
+        run: |
+          test -f dist-pages/.well-known/spatial-review.json
+          tar --dereference --hard-dereference -cf "$RUNNER_TEMP/artifact.tar" -C dist-pages .
+      - uses: actions/upload-artifact@v4
         with:
-          include-hidden-files: true
-          path: dist-pages
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
       - id: deployment
         uses: actions/deploy-pages@v4
