@@ -1,0 +1,5 @@
+/.well-known/spatial-review.json
+  Access-Control-Allow-Origin: https://spatial-review.alterno.dev
+  Cache-Control: no-cache
+/spatial-review
+  Content-Security-Policy: frame-ancestors 'self' https://spatial-review.alterno.dev

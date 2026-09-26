@@ -15,3 +15,18 @@ Texture sources and licenses are in `public/credits.txt`. Touch devices load the
 The supplied cloud browser has WebGL disabled. Therefore this build's native EGL images are explicitly offline scene-data renders, not browser screenshots or browser FPS measurements. The native renderer uses the application geometry and exported production shaders, with adaptations for OpenGL texture/depth representation. Its timings describe software rendering in that environment only.
 
 The scripts under `scripts` export reproducible geometry/shader inputs, validate camera behavior, report typed-array memory and scene draw budgets, and render the inspection images. Large intermediate geometry and frame sequences are ignored by Git. `PLAN.md`, `GATES.md` and `gates` record implementation and verification evidence, including unresolved environment limits.
+
+## Alterno Spatial Review
+
+Connect this website's URL in [Alterno Spatial Review](https://spatial-review.alterno.dev).
+The editor discovers `/.well-known/spatial-review.json` and opens the dedicated
+`/spatial-review` capture page. Keep that page open while reviewing. Ordinary
+forest visits do not load the review SDK.
+
+The capture provides independent trees and rocks, terrain tiles, woodland context
+and the existing inspection viewpoints. Shapes and placements come from the
+forest's construction code; custom shader appearance and atmospheric lighting are
+approximations. A consumer supporting `asset-stream-v1` is required.
+
+See [integration scope and verification](docs/spatial-review-integration-plan.md)
+for source mapping, supported content, access policy and remaining validation.
