@@ -1,0 +1,18 @@
+{
+  "schema": "spatial-review-discovery/v1",
+  "version": 1,
+  "name": "Verdant Forest",
+  "websiteUrl": "../",
+  "liveCapture": "../spatial-review/?v=5",
+  "capabilities": {
+    "liveCapture": {
+      "editorOriginPolicy": {
+        "mode": "allowlist",
+        "origins": [
+          "https://spatial-review.alterno.dev"
+        ],
+        "allowLoopbackPeers": false
+      }
+    }
+  }
+}

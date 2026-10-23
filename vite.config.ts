@@ -1,7 +1,22 @@
+import {createHash} from 'node:crypto';
+import {readFileSync, readdirSync} from 'node:fs';
 import vinext from "vinext";
-import { defineConfig } from "vite";
+import { defineConfig, type ViteDevServer } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { sites } from "./build/sites-vite-plugin";
+
+// Include source and image bytes so texture-only edits also invalidate reviews.
+function forestReviewBuildId() {
+  const hash = createHash('sha256');
+  for (const directory of ['app/forest', 'public/textures']) {
+    const files = readdirSync(directory, {recursive: true}) as string[];
+    for (const file of files.sort()) {
+      if (!/\.(ts|js|png|jpe?g|webp)$/i.test(file)) continue;
+      hash.update(`${directory}/${file}`).update(readFileSync(`${directory}/${file}`));
+    }
+  }
+  return `forest-${hash.digest('hex').slice(0, 16)}`;
+}
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
@@ -44,6 +59,7 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    define: {__FOREST_REVIEW_BUILD__: JSON.stringify(forestReviewBuildId())},
     server: {
       host: "0.0.0.0",
       allowedHosts: ["terminal.local"],
@@ -53,6 +69,18 @@ export default defineConfig(async () => {
     },
     plugins: [
       vinext(),
+      {
+        name: 'forest-review-discovery-headers',
+        configureServer(server: ViteDevServer) {
+          // Vite serves public files before Vinext's route/header handling.
+          server.middlewares.use((request, response, next) => {
+            if (request.url?.split('?')[0] === '/.well-known/spatial-review.json') {
+              response.setHeader('Access-Control-Allow-Origin', 'https://spatial-review.alterno.dev');
+            }
+            next();
+          });
+        },
+      },
       sites(),
       cloudflare({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },

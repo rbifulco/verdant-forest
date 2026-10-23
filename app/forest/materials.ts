@@ -15,7 +15,8 @@ export function texture(url:string,color=false,repeat=1) {
  // Attach immediately so a fast network failure cannot become unhandled before
  // scene construction reaches the shared loading barrier.
  ready.catch(()=>{});pendingTextures.push(ready);
- const t=new THREE.TextureLoader().load(url,()=>resolveLoad(),undefined,()=>rejectLoad(new Error(`Could not load forest material: ${url}`)));
+ const assetUrl=`${import.meta.env?.BASE_URL ?? '/'}${url.replace(/^\//, '')}`;
+ const t=new THREE.TextureLoader().load(assetUrl,()=>resolveLoad(),undefined,()=>rejectLoad(new Error(`Could not load forest material: ${assetUrl}`)));
  t.colorSpace=color?THREE.SRGBColorSpace:THREE.NoColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(repeat,repeat);t.anisotropy=8;textureCache.set(key,t);return t;
 }
 export function materialsReady(){return Promise.all(pendingTextures);}

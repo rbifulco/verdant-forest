@@ -78,7 +78,7 @@ export async function createVegetation(scene:THREE.Scene,coarse:boolean,signal?:
     }
     o.position.y-=p.sink;o.updateMatrix();
     if(geo===variants[v].wood){const rows=geo.userData.trunkSurfaceRows as number[][],vertices=geo.attributes.position;let radius=0;for(const index of rows[0])radius=Math.max(radius,Math.hypot(vertices.getX(index)*o.scale.x,vertices.getZ(index)*o.scale.z));p.radius=radius+.045;}
-    mesh.setMatrixAt(i,o.matrix);if(geo===variants[v].wood&&Math.hypot(p.x,p.z)<120)treeSurfaces.push({geometry:geo,matrix:o.matrix.clone(),center:new THREE.Vector3(p.x,0,p.z),seed:Math.floor((p.x+220)*7919+(p.z+220)*104729)});});mesh.userData.kind='tree';mesh.customDepthMaterial=geo===variants[v].leaves?leafDepth:woodDepth;mesh.userData.lods=geo===variants[v].wood?[geo,variants[v].medium.wood,variants[v].low.wood]:[geo,variants[v].medium.leaves,variants[v].low.leaves];mesh.castShadow=mesh.receiveShadow=true;mesh.computeBoundingSphere();scene.add(mesh);meshes.push(mesh);}
+    mesh.setMatrixAt(i,o.matrix);if(geo===variants[v].wood&&Math.hypot(p.x,p.z)<120)treeSurfaces.push({geometry:geo,matrix:o.matrix.clone(),center:new THREE.Vector3(p.x,0,p.z),seed:Math.floor((p.x+220)*7919+(p.z+220)*104729)});});mesh.userData.kind='tree';mesh.userData.reviewVariant=v;mesh.userData.reviewPlacementIds=ps.map(p=>positions.indexOf(p));mesh.customDepthMaterial=geo===variants[v].leaves?leafDepth:woodDepth;mesh.userData.lods=geo===variants[v].wood?[geo,variants[v].medium.wood,variants[v].low.wood]:[geo,variants[v].medium.leaves,variants[v].low.leaves];mesh.castShadow=mesh.receiveShadow=true;mesh.computeBoundingSphere();scene.add(mesh);meshes.push(mesh);}
   }
   if(meshes.length)cells.push({center:new THREE.Vector3(cx*20+10,0,cz*20+10),meshes,kind:'tree',base:meshes.map(m=>m.count)});
  }
@@ -170,12 +170,12 @@ export async function createVegetation(scene:THREE.Scene,coarse:boolean,signal?:
      for(let q=0;q<4;q++){
       const compact=createCompactGrass(patchRoots[q],patchSizes[q],quantities[q],[geo,grassMedium[variant],grassLow[variant]],grassMat);
       const patchCenter=new THREE.Vector3(center.x+(q%2?5:-5),0,center.z+(q>1?5:-5));
-      scene.add(compact);cells.push({center:patchCenter,meshes:[compact],kind:'grass',base:[quantities[q]]});
+      compact.userData.reviewKey=`grass-${cx}-${cz}-${q}`;scene.add(compact);cells.push({center:patchCenter,meshes:[compact],kind:'grass',base:[quantities[q]]});
      }
      stats.grass+=count;continue;
     }
     if(!mesh)continue;
-    mesh.count=count;mesh.userData.kind=item.kind;
+    mesh.count=count;mesh.userData.kind=item.kind;mesh.userData.reviewKey=`${item.kind}-${cx}-${cz}`;
     if('low' in item && item.low){
      mesh.userData.lods='medium' in item&&item.medium?[geo,item.medium[variant],item.low[variant]]:[geo,item.low[variant]];
     }
