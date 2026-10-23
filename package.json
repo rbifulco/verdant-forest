@@ -16,7 +16,7 @@
     "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate"
   },
   "dependencies": {
-    "@alterno-dev/spatial-review": "0.7.0",
+    "@alterno-dev/spatial-review": "0.8.0",
     "@base-ui/react": "^1.7.0",
     "@hookform/resolvers": "^5.7.1",
     "@shadcn/react": "^0.3.0",
