@@ -6,6 +6,8 @@ import { defineConfig } from 'vite';
 
 function reviewBuildId() {
   const hash = createHash('sha256');
+  // SDK upgrades change serialized appearance and must invalidate saved captures.
+  hash.update(readFileSync('package-lock.json'));
   for (const directory of ['app/forest', 'public/textures']) {
     for (const file of (readdirSync(directory, { recursive: true }) as string[]).sort()) {
       if (!/\.(ts|js|png|jpe?g|webp)$/i.test(file)) continue;
