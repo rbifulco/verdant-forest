@@ -8,6 +8,8 @@ import { sites } from "./build/sites-vite-plugin";
 // Include source and image bytes so texture-only edits also invalidate reviews.
 function forestReviewBuildId() {
   const hash = createHash('sha256');
+  // SDK upgrades change serialized appearance and must invalidate saved captures.
+  hash.update(readFileSync('package-lock.json'));
   for (const directory of ['app/forest', 'public/textures']) {
     const files = readdirSync(directory, {recursive: true}) as string[];
     for (const file of files.sort()) {

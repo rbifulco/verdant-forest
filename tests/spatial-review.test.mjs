@@ -31,6 +31,9 @@ test('tree placements remain separate while sharing a canonical wood and canopy 
   const registry = new SceneAssetRegistry('test');
   const wood = new THREE.InstancedMesh(new THREE.BoxGeometry(1,8,1), new THREE.MeshStandardMaterial(), 2);
   const leaves = new THREE.InstancedMesh(new THREE.SphereGeometry(3), new THREE.MeshStandardMaterial(), 2);
+  leaves.geometry.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(leaves.geometry.attributes.position.count * 3).fill(0.4), 3));
+  leaves.material.vertexColors = true;
+  leaves.material.map = new THREE.DataTexture(new Uint8Array([40, 150, 20, 255]), 1, 1);
   wood.userData.reviewVariant = 0;
   for (let i = 0; i < 2; i++) {
     const matrix = new THREE.Matrix4().makeTranslation(i * 20, 0, 4);
@@ -45,6 +48,10 @@ test('tree placements remain separate while sharing a canonical wood and canopy 
   assert.ok(result?.bytes > 0);
   assert.ok(result.asset.nodes.some(node => node.name === 'Trunk and branches'));
   assert.ok(result.asset.nodes.some(node => node.name === 'Canopy leaves'));
+  const sceneResult = await registry.produceAssetRepresentation('tree-variant-0', 'scene', 'detail', 64*1024*1024, 'interactive', new AbortController().signal);
+  assert.ok(sceneResult.asset.geometries.some(entry => entry.geometry.colors?.length));
+  assert.ok(sceneResult.asset.geometries.every(entry => entry.geometry.uvs?.length));
+  assert.ok(sceneResult.asset.materials.some(material => material.vertexColors && material.maps?.some(map => map.slot === 'map' && map.resourceId)));
 });
 
 test('deferred export honors cancellation and rejects insufficient transfer budgets', async () => {

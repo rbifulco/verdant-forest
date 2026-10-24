@@ -2,7 +2,7 @@
 
 ## Scope and access
 
-The requested integration uses the released `@alterno-dev/spatial-review` 0.7.0
+The requested integration uses the released `@alterno-dev/spatial-review` 0.9.0
 SDK and the official editor, https://spatial-review.alterno.dev. The capture
 bridge accepts that exact origin and same-origin peers. No additional editor
 origins or cross-origin loopback peers are enabled. The dedicated capture page
@@ -136,3 +136,11 @@ inputs, canonical shape changes to factories, and viewpoint changes using the
 height conversion above. Reload the capture and reconnect to receive a fresh
 source-hashed build. Retire editor operations only after their intent is present
 in source. Preserve unresolved feedback across new baselines.
+
+## SDK 0.9.0 appearance update
+
+Vertex colors, UVs, and supported texture maps are retained in Scene captures.
+The build identity includes the lockfile so an SDK upgrade invalidates older
+serialized captures. Shared geometry and maps remain shared across placements.
+The representative tree and rock were compared in the editor; custom shader
+effects and original lighting remain the approximations described above.
